@@ -1,0 +1,155 @@
+<?php
+/**
+ * @file
+ * This module will allow you to add calculated fields to views tables
+ * and compute (SUM, COUNT, AVG, etc) columns of numeric data in a views table.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\views\Views;
+//use Drupal\views\ViewsDataHelper;
+
+/**
+ * Implements hook_help().
+ */
+function views_calc_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+  	/*
+    case 'admin/config/views_calc':
+    case 'admin/config/views_calc/fields':
+      return t('<p>Set up calculation fields. Calculation fields will be displayed in the views fields list and can be added to any view.</p>');
+    case 'admin/config/views_calc/settings':
+      return t('Put one operator on each line. To avoid the possibility of SQL injection, calculation text will only allow these values, numbers, and field names. Make sure this list includes any text other than field names that should be allowed in the calculation fields.');
+     */
+    case 'help.page.views_calc':
+      return t('<ul> <li>Go to admin/settings/views_calc to create calculations.</li> <li>The \'Fields\' tab will allow you to create calculated fields that can be inserted into any view. The calculations can include the value of any Views field, combined with numbers, arithmatic operations, and common SQL functions like ROUND() or MIN(). Each available field has a shortcut name like %Node:Title. Create SQL snippets like (%Node:Field1 + 84600) or ROUND(%Node:Field2 / 3). </li> <li>The \'Columns\' tab allows you to set column calculations. The column totals are added in the view itself by using the style \'Views Calc Table\' and setting the fields in the table that should have column totals.</li> <li>The \'Settings\' tab allows you to add new functions to the list of allowable functions. </ul>');
+  }
+}
+
+/**
+ * Default SQL operator alternatives.
+ *
+ * The ones allowed in this system are stored in the
+ * variable views_calc_operators, and can be changed
+ * at admin/settings/views_calc.
+ *
+ */
+function _views_calc_operators() {
+  $default = array('+', '-', '*', '/', '(', ')', ',', "'", 'CONCAT', 'MIN', 'MAX', 'ROUND', 'NOW()');
+  $operators = implode("\n", $default);//variable_get('views_calc_operators', implode("\n", $default));
+  return explode("\n", $operators);
+
+}
+
+/**
+ * Wrapper function to make sure this function will always work.
+ */
+function views_calc_views_fetch_fields($base, $type) {
+  // @todo is this needed, views code should always be available now, even in minimal?
+  if (!\Drupal::moduleHandler()->moduleExists('views')) {
+    return array();
+  }
+
+  return Views::viewsDataHelper()->fetchFields($base, $type);
+}
+
+/**
+ *  Field substitutions for calculations.
+ */
+function _views_calc_substitutions($base = 'node') {
+  // We retrieve fields of type 'filter' instead of 'field'
+  // because filters have the actual table columns we might
+  // do calculations on, while fields may have only a nid.
+  $fields = views_calc_views_fetch_fields($base, 'filter');
+  // @todo are these supposed to be here?
+  $substitutions['node.nid'] = '%Node.nid';
+  $substitutions['node.uid'] = '%Node.uid';
+  foreach ($fields as $key => $field) {
+    // For now, omit calculated fields from available fields list.
+    // Doing caculations on calculated fields will require some
+    // complex additional logic, especially if they are nested
+    // several levels deep.
+    if (substr($key, 0, 4) != '.cid') {
+      $substitutions[$key] = '%' . str_replace(' ', '', $key);
+    }
+  }
+  return $substitutions;
+}
+
+/**
+ * Views calc fields result object.
+ */
+function _views_calc_fields() {
+  $query = db_select('views_calc_fields', 'vcf');
+  $query->fields('vcf', array('cid', 'label', 'calc', 'tablelist', 'fieldlist', 'format', 'custom', 'base'));
+  $result = $query->execute();
+  return $result;
+}
+
+/**
+ * An array of allowable calculation values.
+ */
+function _views_calc_replacements() {
+  $operators     = array_filter(_views_calc_operators(), 'trim');
+  $numbers       = range(0, 9);
+  return array_merge($operators, $numbers);
+}
+
+/**
+ *  Result format options.
+ */
+function _views_calc_format_options() {
+  $options = array(
+    'none' => '',
+    'integer' => 'intval',
+    'decimal (1)' => 'number_format:1',
+    'decimal (2)' => 'number_format:2',
+    'shortdate' => 'format_date:small',
+    'mediumdate' => 'format_date',
+    'longdate' => 'format_date:large',
+    'custom' => '',
+  );
+  return $options;
+}
+
+/**
+ *  Column calculation alternatives.
+ */
+function _views_calc_calc_options() {
+  return array(
+    'COUNT' => t('Count'),
+    'SUM' => t('Sum'),
+    'AVG' => t('Average'),
+    'MIN' => t('Minimum'),
+    'MAX' => t('Maximum'),
+  );
+}
+
+/**
+ * Implements hook_theme().
+ */
+function views_calc_theme() {
+  return array(
+    // On behalf of a plugin
+    'views_ui_style_plugin_calc_table' => array(
+      'render element' => 'form',
+      'file' => 'views_calc.theme.inc',
+    ),
+  );
+}
+
+/**
+ *
+ * Link to the template_preprocess function
+ */
+function template_preprocess_views_view_calc_table(&$variables) {
+  \Drupal::moduleHandler()->loadInclude('views_calc', 'inc', 'views_calc.theme');
+  _views_calc_preprocess_views_view_calc_table($variables);
+}
+
+/**
+ * Make sure our reconstructed aliases don't get too long
+ */
+function views_calc_shorten($alias) {
+  return strtolower(substr($alias, 0, 60));
+}

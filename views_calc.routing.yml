@@ -1,0 +1,39 @@
+views_calc.fields:
+  path: 'admin/structure/views_calc'
+  defaults:
+    _title: 'Views Calc'
+    _form: '\Drupal\views_calc\Form\FieldsForm'
+  requirements:
+    _permission: 'create views calc'
+  options:
+    _admin_route: TRUE
+
+views_calc.settings:
+  path: 'admin/structure/views_calc/settings'
+  defaults:
+    _title: 'Settings'
+    _form: '\Drupal\views_calc\Form\SettingsForm'
+  requirements:
+    _permission: 'administer views calc'
+  options:
+    _admin_route: TRUE
+
+views_calc.export:
+  path: 'admin/structure/views_calc/export'
+  defaults:
+    _title: 'Export fields'
+    _form: '\Drupal\views_calc\Form\ExportForm'
+  requirements:
+    _permission: 'create views calc'
+  options:
+    _admin_route: TRUE
+
+views_calc.import:
+  path: 'admin/structure/views_calc/import'
+  defaults:
+    _title: 'Import fields'
+    _form: '\Drupal\views_calc\Form\ImportForm'
+  requirements:
+    _permission: 'create views calc'
+  options:
+    _admin_route: TRUE

@@ -1,0 +1,9 @@
+views_calc.settings:
+  type: config_object
+  mapping:
+    operations:
+      type: sequence
+      label: 'Operations'
+      sequence:
+        type: string
+        label: 'Operations'

@@ -1,0 +1,8 @@
+name: Views Calc
+type: module
+description: 'This module will allow you to add calculated fields to views tables and compute columns of numeric data in a views table.'
+core: 8.x
+package: Views
+configure: views_calc.fields
+dependancies:
+ -views

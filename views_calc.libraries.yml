@@ -1,0 +1,11 @@
+views_calc:
+  version: VERSION
+  css:
+    theme:
+      css/views_calc.theme.css: {}
+views_calc_admin:
+  version: VERSION
+  css:
+    theme:
+      css/views_calc.admin.css: {}
+

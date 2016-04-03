@@ -1,0 +1,24 @@
+td.view-footer, 
+td.view-footer-number, 
+td.view-total, 
+td.view-total-number {
+  font-weight:bold;
+  background-color:#eaeaea;
+  }
+
+td.view-footer, 
+td.view-footer-number {
+  border-bottom:3px #000 double;
+  border-top:1px #000 solid;
+  }
+td.view-subfooter, 
+td.view-subfooter-number {
+  font-weight:normal;
+  background-color:#fff;
+  }
+
+td.view-subfooter, 
+td.view-subfooter-number {
+  border-bottom:1px #000 solid;
+  border-top:1px #000 solid;
+  }

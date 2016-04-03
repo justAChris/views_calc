@@ -1,0 +1,19 @@
+views_calc.fields:
+  title: Fields
+  route_name: views_calc.fields
+  base_route: views_calc.config
+
+views_calc.settings:
+  title: Settings
+  route_name: views_calc.settings
+  base_route: views_calc.config
+
+views_calc.export:
+  title: Export Fields
+  route_name: views_calc.export
+  base_route: views_calc.config
+
+views_calc.import:
+  title: Import Fields
+  route_name: views_calc.import
+  base_route: views_calc.config

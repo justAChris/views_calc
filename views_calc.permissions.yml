@@ -1,0 +1,7 @@
+create views calc:
+  title: 'create views calc'
+  description: 'TODO Add a description for "create views calc"'
+
+administer views calc:
+  title:  'administer views calc'
+  description: 'TODO Add a description for "administer views calc"'

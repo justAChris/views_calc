@@ -1,0 +1,5 @@
+views_calc.config:
+  title: Views Calc
+  description: 'Set Views Calc fields and columns.'
+  parent: system.admin_structure
+  route_name: views_calc.fields
